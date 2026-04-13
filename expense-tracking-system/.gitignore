@@ -1,0 +1,67 @@
+# .gitignore for Expense Tracking System
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+.flattened-pom.xml
+
+# IDE
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Build
+build/
+dist/
+bin/
+
+# Logs
+*.log
+logs/
+
+# JaCoCo coverage
+.coverage
+*.exec
+
+# Node (if needed for web frontend)
+node_modules/
+npm-debug.log
+
+# Docker
+.dockerignore
+
+# Kubernetes
+kubeconfig
+.kube/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Test reports
+test-results/
+coverage-reports/

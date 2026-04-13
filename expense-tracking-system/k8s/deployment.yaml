@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expense-tracker-deployment
+  namespace: default
+  labels:
+    app: expense-tracker
+
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: expense-tracker
+
+  template:
+    metadata:
+      labels:
+        app: expense-tracker
+    spec:
+      containers:
+      - name: expense-tracker
+        image: expense-tracking-system:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+          name: http
+        
+        # Resource requests and limits
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        
+        # Liveness probe
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        
+        # Readiness probe
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        
+        # Environment variables
+        env:
+        - name: APP_NAME
+          value: "Expense Tracking System"
+        - name: LOG_LEVEL
+          value: "INFO"
+
+      # Pod restart policy
+      restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: expense-tracker-service
+  namespace: default
+  labels:
+    app: expense-tracker
+
+spec:
+  type: LoadBalancer
+  selector:
+    app: expense-tracker
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
+    name: http
+
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: expense-tracker-hpa
+  namespace: default
+
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: expense-tracker-deployment
+
+  minReplicas: 2
+  maxReplicas: 5
+
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
